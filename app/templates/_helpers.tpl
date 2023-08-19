@@ -43,11 +43,31 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
+OpenAPI labels
+*/}}
+{{- define "app.labelsOpenapi" -}}
+helm.sh/chart: {{ include "app.chart" . }}
+{{ include "app.selectorLabelsOpenapi" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
 Selector labels
 */}}
 {{- define "app.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "app.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+OpenAPI Selector labels
+*/}}
+{{- define "app.selectorLabelsOpenapi" -}}
+app.kubernetes.io/name: {{ include "app.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}-openapi
 {{- end }}
 
 {{/*

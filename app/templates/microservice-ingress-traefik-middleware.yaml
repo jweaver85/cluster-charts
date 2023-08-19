@@ -1,0 +1,13 @@
+{{- if .Values.ingress.enabled }}
+{{- if eq "traefik" .Values.ingress.className }}
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ .Release.Name }}-strip-prefix
+spec:
+  stripPrefix:
+    forceSlash: true
+    prefixes:
+      - /{{ .Release.Name }}/
+{{- end}}
+{{- end}}

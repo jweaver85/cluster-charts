@@ -1,16 +1,17 @@
+{{- if .Values.openapi.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "app.fullname" . }}
+  name: {{ .Release.Name }}-openapi
   labels:
-    {{- include "app.labels" . | nindent 4 }}
+    {{- include "app.labelsOpenapi" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "app.selectorLabels" . | nindent 6 }}
+      {{- include "app.selectorLabelsOpenapi" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,7 +19,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "app.selectorLabels" . | nindent 8 }}
+        {{- include "app.selectorLabelsOpenapi" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -28,25 +29,24 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+        - name: {{ .Release.Name }}-openapi
+          image: {{ .Values.openapi.image }}:{{ .Values.openapi.tag }}
+          imagePullPolicy: {{ .Values.openapi.pullPolicy }}
+          env:
+            - name: SERVERS
+              value: "http://weaver-cluster.com/"
+            - name: URL
+              value: "http://weaver-cluster.com/{{.Release.Name}}/api/schema/"
+            - name: FILTER
+              value: "true"
+            - name: LAYOUT
+              value: "BaseLayout"
+            - name: DEFAULT_MODELS_EXPAND_DEPTH
+              value: "-1"
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: {{ .Values.openapi.port }}
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -59,3 +59,4 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+{{- end }}

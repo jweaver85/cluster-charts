@@ -1,0 +1,25 @@
+{{- if .Values.openapi.enabled }}
+{{- if eq "traefik" .Values.ingress.className }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-openapi
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: {{.Release.Namespace}}-{{ .Release.Name }}-openapi-strip-prefix@kubernetescrd
+    traefik.ingress.kubernetes.io/rewrite-target: /{{ .Release.Name }}-openapi
+spec:
+  {{/* Known issue: https://stackoverflow.com/a/76361739 value from .Values is quoted like "traefik" and doesn't work */}}
+  ingressClassName: traefik
+  rules:
+    - host: weaver-cluster.com
+      http:
+        paths:
+          - path: /{{ .Release.Name }}/openapi
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Release.Name }}-openapi
+                port:
+                  number: {{ .Values.openapi.port }}
+{{- end}}
+{{- end}}

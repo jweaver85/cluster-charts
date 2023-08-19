@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+data:
+  DJANGO_SETTINGS_MODULE: "Base.settings"
+  DEBUG: "false"
+  INTERNAL_HOST: "{{ .Release.Name }}.default.svc.cluster.local"
+  DOMAIN_HOST: "weaver-cluster.com"
+  LOG_LEVEL: "INFO"
+  APP_NAME: {{ .Release.Name }}
+  APP_VERSION: {{ .Values.image.tag }}
+  OPENAPI_PREFIX_URLS: "true"
+{{/* IMPORTANT! Do not add POSTGRES_DB here it won't work correctly. The pre-install job hook needs to be aware of it before the ConfigMap is installed */}}
