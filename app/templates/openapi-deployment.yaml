@@ -35,12 +35,16 @@ spec:
           env:
             - name: SERVERS
               value: "http://weaver-cluster.com/"
-            - name: URL
-              value: "http://weaver-cluster.com/{{.Release.Name}}/api/schema/"
+            - name: URLS
+              value: >-
+                [
+                { name: "v1", url: "http://weaver-cluster.com/{{.Release.Name}}/api/schema/?version=v1"},
+                { name: "v2", url: "http://weaver-cluster.com/{{.Release.Name}}/api/schema/?version=v2" }
+                ]
             - name: FILTER
               value: "true"
             - name: LAYOUT
-              value: "BaseLayout"
+              value: "StandaloneLayout"
             - name: DEFAULT_MODELS_EXPAND_DEPTH
               value: "-1"
           ports:
