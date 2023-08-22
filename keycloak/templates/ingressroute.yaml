@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{.Release.Name}}
+
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`keycloak.example.com`)
+      kind: Rule
+      services:
+        - name: keycloak
+          port: 8080
+{{/*  tls:*/}}
+{{/*    certResolver: godaddy*/}}
